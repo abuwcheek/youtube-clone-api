@@ -20,17 +20,18 @@ class CreateChanelView(APIView):
                     return Response(data=data)
           except Exception as ex:
                pass
-          data = request.POST.copy()
-          data['user'] = request.user.id
-          serializer = ChanelSerializers(data=data)
+
+          serializer = ChanelSerializers(data=request.data, contex={'request': request})
           serializer.is_valid(raise_exception=True)
-          serializer.save()
+          chanel = serializer.save()
+          chanel.user = request.user
+          chanel.save()
           response_data = {
                'status': True,
                'message': 'Kanal yaratildi',
                'data': serializer.data
           }
-          return Response(data=data)
+          return Response(data=response_data)
 
 
 class DeleteChanelView(APIView):

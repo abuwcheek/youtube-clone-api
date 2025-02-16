@@ -6,7 +6,7 @@ from apps.base.models import BaseModel
 
 class Chanel(BaseModel):
      name = models.CharField(max_length=255)
-     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='chanel')
+     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='chanel', null=True, blank=True)
      icon = models.ImageField(upload_to='chanel_icon/', null=True, blank=True)
      banner = models.ImageField(upload_to='chanel_banner/', null=True, blank=True)
      description = models.TextField()

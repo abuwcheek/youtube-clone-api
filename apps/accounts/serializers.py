@@ -7,4 +7,4 @@ from .models import Chanel
 class ChanelSerializers(ModelSerializer):
      class Meta:
           model = Chanel
-          fields = '__all__'
+          fields = [ 'id', 'user', 'name', 'icon', 'banner', 'description']

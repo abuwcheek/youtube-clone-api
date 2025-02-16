@@ -5,10 +5,18 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 
+from .views import CreateChanelView, DeleteChanelView
+
 urlpatterns = [
     # Token olish uchun
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token', TokenObtainPairView.as_view(), name='token_obtain_pair'),
 
     # Tokenni yangilash uchun
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('api/token/refresh', TokenRefreshView.as_view(), name='token_refresh'),
+]
+
+
+urlpatterns += [
+    path('create-chanel', CreateChanelView.as_view(), name='create_chanel'),
+    path('delete-chanel/<int:pk>', DeleteChanelView.as_view(), name='delete_chanel'),
 ]

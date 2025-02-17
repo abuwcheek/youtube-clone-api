@@ -21,7 +21,7 @@ class CreateChanelView(APIView):
           except Exception as ex:
                pass
 
-          serializer = ChanelSerializers(data=request.data, contex={'request': request})
+          serializer = ChanelSerializers(data=request.data, context={'request': request})
           serializer.is_valid(raise_exception=True)
           chanel = serializer.save()
           chanel.user = request.user
@@ -52,3 +52,19 @@ class DeleteChanelView(APIView):
                     'message': 'Kanal sizga tegishli emas'
                }
                return Response(data=data)
+
+
+
+class GetDataChanel(APIView):
+     permission_classes = [IsAuthenticated]
+
+     def get(self, request):
+          chanel = request.user.chanel
+
+          serializer = ChanelSerializers(instance=chanel, context={'request': request})
+          data = {
+               'status': True,
+               'data': serializer.data
+          }
+          return Response(data=data)
+          

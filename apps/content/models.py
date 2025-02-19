@@ -19,10 +19,10 @@ class Category(BaseModel):
 
 class Video(BaseModel):
      title = models.CharField(max_length=255)
-     description = models.TextField()
+     description = models.TextField(null=True, blank=True)
      photo = models.ImageField(upload_to='videos/')
      video = models.FileField(upload_to='content_videos/')
-     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='content_videos')
+     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='content_videos', null=True, blank=True)
      category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name='category_videos')
 
      class Meta:
@@ -107,3 +107,9 @@ class CommentReply(BaseModel):
      def __str__(self):
           return f'{self.user.username} - {self.comment.comment}'
 
+
+
+class PlayList(BaseModel):
+     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_playlists')
+     title = models.CharField(max_length=255)
+     videos = models.ManyToManyField(Video, related_name='videos_playlists')

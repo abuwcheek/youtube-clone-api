@@ -1,10 +1,15 @@
-from rest_framework.serializers import ModelSerializer
+from rest_framework import serializers
 
 from .models import Chanel
 
 
 
-class ChanelSerializers(ModelSerializer):
+class ChanelSerializers(serializers.ModelSerializer):
+     followers_count = serializers.SerializerMethodField()
      class Meta:
           model = Chanel
-          fields = [ 'id', 'user', 'name', 'icon', 'banner', 'description']
+          fields = [ 'id', 'user', 'name', 'icon', 'banner', 'description', 'followers_count']
+
+
+     def get_followers_count(self, obj):
+          return obj.followers.all().count()

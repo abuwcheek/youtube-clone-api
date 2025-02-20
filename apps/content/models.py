@@ -1,6 +1,8 @@
 from django.db import models
-from apps.accounts.models import User, Chanel
+from django.contrib.auth.models import User
+from apps.accounts.models import Chanel
 from apps.base.models import BaseModel
+
 
 
 class Category(BaseModel):
@@ -22,7 +24,7 @@ class Video(BaseModel):
      description = models.TextField(null=True, blank=True)
      photo = models.ImageField(upload_to='videos/')
      video = models.FileField(upload_to='content_videos/')
-     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='content_videos', null=True, blank=True)
+     author = models.ForeignKey(Chanel, on_delete=models.CASCADE, related_name='chanel_videos', null=True, blank=True)
      category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name='category_videos')
 
      class Meta:

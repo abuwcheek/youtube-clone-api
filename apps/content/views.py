@@ -1,12 +1,13 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
-from rest_framework.generics import DestroyAPIView
+from rest_framework.generics import DestroyAPIView, UpdateAPIView, RetrieveAPIView, ListAPIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from .permissions import IsHasChanel, IsOwner
 from .models import Video
-from .permissions import IsHasChanel
 from .serializers import VideoSerializers
+from .paginations import MyPageNumberPagination
 # Create your views here.
 
 
@@ -31,8 +32,45 @@ class CreateVideoAPIView(APIView):
           return Response(data=data)
 
 
-class DeleteVideoAPIView(DestroyAPIView):
-     permission_classes = [IsAuthenticated]
+class DeleteVideoView(DestroyAPIView):
+     permission_classes = [IsHasChanel, IsOwner]
      serializer_class = VideoSerializers
      queryset = Video.objects.filter(is_active=True)
-     lookup_field = 'id'
+
+     def destroy(self, request, *args, **kwargs):
+          super().destroy(request, *args, **kwargs)
+          data = {
+               'status': True,
+               'msg': 'Video o`chirildi'
+          }
+          return Response(data=data)
+
+
+
+class UpdateVideoView(UpdateAPIView):
+     permission_classes = [IsHasChanel, IsOwner]
+     serializer_class = VideoSerializers
+     queryset = Video.objects.filter(is_active=True)
+
+     def update(self, request, *args, **kwargs):
+          super().update(request, *args, **kwargs)
+          data = {
+               'status': True,
+               'msg': 'Video o`zgartirildi'
+          }
+          return Response(data=data)
+
+
+
+class RetrieveVideoView(RetrieveAPIView):
+     permission_classes = [AllowAny]
+     serializer_class = VideoSerializers
+     queryset = Video.objects.all()
+
+
+
+class ListVideoView(ListAPIView):
+     permission_classes = [AllowAny]
+     serializer_class = VideoSerializers
+     queryset = Video.objects.filter(is_active=True)
+     pagination_class = MyPageNumberPagination

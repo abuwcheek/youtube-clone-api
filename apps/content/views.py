@@ -1,11 +1,11 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.generics import DestroyAPIView, UpdateAPIView, RetrieveAPIView, ListAPIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .permissions import IsHasChanel, IsOwner
-from .models import Video
+from .models import Video, Like
 from .serializers import VideoSerializers
 from .paginations import MyPageNumberPagination
 # Create your views here.
@@ -74,3 +74,34 @@ class ListVideoView(ListAPIView):
      serializer_class = VideoSerializers
      queryset = Video.objects.filter(is_active=True)
      pagination_class = MyPageNumberPagination
+
+
+
+class LikeToVideoView(APIView):
+     permission_classes = [IsAuthenticated]
+     
+     def post(self, request):
+          video = get_object_or_404(Video, id=request.data['video'])
+          like = Like.objects.filter(video=video, user=request.user).first()
+          dislike = request.data.get('dislike') == 'true'
+          if like:     
+               if like.dislike == dislike:
+                    like.delete()
+                    data = {
+                         'status': True,
+                         'msg': "like o'chirildi"
+                    }
+               else:
+                    like.dislike = dislike
+                    like.save()
+                    data = {
+                         'status': True,
+                         'msg': "like o'zgartirildi"
+                    }
+          else:
+               Like.objects.create(video=video, user=request.user, dislike=dislike)
+               data = {
+                    'status': True,
+                    'msg': 'like bosildi'
+               }
+          return Response(data=data)

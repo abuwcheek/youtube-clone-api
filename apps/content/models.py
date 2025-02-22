@@ -82,7 +82,7 @@ class Comment(BaseModel):
 
 
 class CommentLike(BaseModel):
-     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comment_likes')
+     user = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='comment_likes', null=True, blank=True)
      comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name='comment_likes')
      dislike = models.BooleanField(default=False)
 
@@ -97,7 +97,7 @@ class CommentLike(BaseModel):
 
 
 class CommentReply(BaseModel):
-     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comment_replies')
+     user = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='comment_replies', null=True, blank=True)
      comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name='comment_replies')
      reply = models.TextField()
 
@@ -112,6 +112,6 @@ class CommentReply(BaseModel):
 
 
 class PlayList(BaseModel):
-     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_playlists')
+     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_playlists')
      title = models.CharField(max_length=255)
-     videos = models.ManyToManyField(Video, related_name='videos_playlists')
+     videos = models.ManyToManyField(Video, related_name='videos_playlists', blank=True)

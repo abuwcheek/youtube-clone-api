@@ -1,5 +1,13 @@
 from django.urls import path
-from .views import CreateVideoAPIView, DeleteVideoView , UpdateVideoView, RetrieveVideoView, ListVideoView, LikeToVideoView
+from .views import (CreateVideoAPIView, DeleteVideoView, 
+                    UpdateVideoView, RetrieveVideoView, 
+                    ListVideoView, LikeToVideoView, 
+                    CommentToVideoView, DeleteCommentVideoView,
+                    UpdateCommentView, LikeToCommentView,
+                    CommentReplyView, DeleteCommentReplyView,
+                    UpdateCommentReplyView, CreatePlayListView,
+                    DeletePlayListView, AddVideoPlayListView,
+                    RemoveVideoFromPlayListView)
 
 urlpatterns = [
      path('create-video', CreateVideoAPIView.as_view(), name='create-video'),
@@ -7,5 +15,16 @@ urlpatterns = [
      path('update-video/<int:pk>', UpdateVideoView.as_view(), name='update-video'),
      path('retrieve-video/<int:pk>', RetrieveVideoView.as_view(), name='retrieve-video'),
      path('list-videos', ListVideoView.as_view(), name='list-video'),
-     path('like-video', LikeToVideoView.as_view(), name='like-video')
+     path('like-video', LikeToVideoView.as_view(), name='like-video'),
+     path('comment-video', CommentToVideoView.as_view(), name='comment-video'),
+     path('delete-comment/<int:pk>', DeleteCommentVideoView.as_view(), name='delete-comment'),
+     path('update-comment/<int:pk>', UpdateCommentView.as_view(), name='update-comment'),
+     path('like-comment', LikeToCommentView.as_view(), name='like-comment'),
+     path('comment-reply', CommentReplyView.as_view(), name='comment-reply'),
+     path('delete-comment-reply/<int:pk>', DeleteCommentReplyView.as_view(), name='delete-comment-reply'),
+     path('update-comment-reply/<int:pk>', UpdateCommentReplyView.as_view(), name='update-comment-reply'),
+     path('create-playlist', CreatePlayListView.as_view(), name='create-playlist'),
+     path('delete-playlist/<int:pk>', DeletePlayListView.as_view(), name='delete-playlist'),
+     path('add-video-playlist/<int:pk>', AddVideoPlayListView.as_view(), name='add-video-playlist'),
+     path('remove-video-playlist/<int:pk>', RemoveVideoFromPlayListView.as_view(), name='remove-video-playlist'),
 ]

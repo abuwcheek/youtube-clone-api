@@ -8,8 +8,11 @@ from .permissions import IsHasChanel, IsOwner, IsAuthor
 from .models import Video, Like, Comment, CommentLike, CommentReply, PlayList
 from .serializers import (VideoSerializers, CommentSerializers, 
                          UpdateCommentSerializers, CommentReplySerializers, 
-                         UpdateCommentReplySerializers, CreatePlayListSerializers)
+                         UpdateCommentReplySerializers, CommentListSerializers,
+                          CreatePlayListSerializers,)
 from .paginations import MyPageNumberPagination
+from apps.accounts.models import Chanel
+from apps.accounts.serializers import ChanelDataForVideoSerializers
 # Create your views here.
 
 
@@ -281,3 +284,52 @@ class RemoveVideoFromPlayListView(APIView):
                     'msg': 'Siz playlist muallifi emassiz'
                }
           return Response(data=data)
+
+
+
+class FollowToChanelView(APIView):
+     permission_classes = [IsAuthenticated]
+
+     def post(self, request):
+          chanel = get_object_or_404(Chanel, id=request.data['chanel'])
+          user = request.user
+
+          if user in chanel.followers.all():
+               chanel.followers.remove(user)
+               data = {
+                    'status': True,
+                    'msg': 'Obuna bekor qilindi'
+               }
+          else:
+               chanel.followers.add(user)
+               data = {
+                    'status': True,
+                    'msg': 'Obuna qilindi'
+               }
+          return Response(data=data)
+
+
+
+class FollowedChanelsListView(ListAPIView):
+     permission_classes = [IsAuthenticated]
+     serializer_class = ChanelDataForVideoSerializers
+
+     # (queryset) bilan (get_queryset) ni umuman farqi yoq 
+     # oddiy-oddiy ishlaga masalan(is_active, filter) la uchun (queryset) mukammalroq ishla uchun masalan(user)ni tutib olish ili bashqa ishla uchun (get_queryset) ni ishlatish kerak 
+     def get_queryset(self):
+          user = self.request.user
+          chanels = user.followed_chanels
+          return chanels
+
+
+
+class VideoCommentListView(ListAPIView):
+     permission_classes = [AllowAny]
+     serializer_class = CommentListSerializers
+     queryset = Comment.objects.filter(is_active=True)
+
+     def get_queryset(self):
+          id = self.kwargs.get('pk')
+          video = get_object_or_404(Video, id=id)
+          comments = video.comments.filter(is_active=True)
+          return comments

@@ -7,7 +7,8 @@ from .views import (CreateVideoAPIView, DeleteVideoView,
                     CommentReplyView, DeleteCommentReplyView,
                     UpdateCommentReplyView, CreatePlayListView,
                     DeletePlayListView, AddVideoPlayListView,
-                    RemoveVideoFromPlayListView)
+                    RemoveVideoFromPlayListView, FollowToChanelView,
+                    FollowedChanelsListView, VideoCommentListView)
 
 urlpatterns = [
      path('create-video', CreateVideoAPIView.as_view(), name='create-video'),
@@ -27,4 +28,7 @@ urlpatterns = [
      path('delete-playlist/<int:pk>', DeletePlayListView.as_view(), name='delete-playlist'),
      path('add-video-playlist/<int:pk>', AddVideoPlayListView.as_view(), name='add-video-playlist'),
      path('remove-video-playlist/<int:pk>', RemoveVideoFromPlayListView.as_view(), name='remove-video-playlist'),
+     path('follow-to-chanel', FollowToChanelView.as_view(), name='follow-chanel'),
+     path('followed-chanels', FollowedChanelsListView.as_view(), name='followed-chanels'),
+     path('video-comments/<int:pk>', VideoCommentListView.as_view(), name='video-comments'),
 ]

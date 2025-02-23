@@ -82,7 +82,7 @@ class Comment(BaseModel):
 
 
 class CommentLike(BaseModel):
-     user = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='comment_likes', null=True, blank=True)
+     user = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='user_comment_likes', null=True, blank=True)
      comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name='comment_likes')
      dislike = models.BooleanField(default=False)
 

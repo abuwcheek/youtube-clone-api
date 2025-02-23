@@ -68,3 +68,4 @@ class GetDataChanel(APIView):
           }
           return Response(data=data)
           
+

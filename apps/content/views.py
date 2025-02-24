@@ -1,15 +1,18 @@
 from django.shortcuts import render, get_object_or_404
+from django.db.models import Count
 from rest_framework.views import APIView
 from rest_framework.generics import DestroyAPIView, UpdateAPIView, RetrieveAPIView, ListAPIView, CreateAPIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .permissions import IsHasChanel, IsOwner, IsAuthor
-from .models import Video, Like, Comment, CommentLike, CommentReply, PlayList
+from .models import Video, Like, Comment, CommentLike, CommentReply, PlayList, View, Category
 from .serializers import (VideoSerializers, CommentSerializers, 
                          UpdateCommentSerializers, CommentReplySerializers, 
                          UpdateCommentReplySerializers, CommentListSerializers,
-                          CreatePlayListSerializers,)
+                          CreatePlayListSerializers, PlayListVideoSerializers,
+                          VideoListSerializers, PlayListSerializers, CategoryListSerializers,
+                          CategorySerializers)
 from .paginations import MyPageNumberPagination
 from apps.accounts.models import Chanel
 from apps.accounts.serializers import ChanelDataForVideoSerializers
@@ -71,6 +74,15 @@ class RetrieveVideoView(RetrieveAPIView):
      permission_classes = [AllowAny]
      serializer_class = VideoSerializers
      queryset = Video.objects.all()
+
+     def retrieve(self, request, *args, **kwargs):
+          if request.user.is_authenticated:
+               video = self.get_object()
+               user = request.user
+               view = View.objects.get_or_create(video=video, user=user)
+               
+               view.save()
+          return super().retrieve(request, *args, **kwargs)
 
 
 
@@ -333,3 +345,84 @@ class VideoCommentListView(ListAPIView):
           video = get_object_or_404(Video, id=id)
           comments = video.comments.filter(is_active=True)
           return comments
+
+
+
+class PlayListVideoView(ListAPIView):
+     permission_classes = [IsAuthenticated]
+     serializer_class = PlayListVideoSerializers
+
+     def get_queryset(self):
+          user = self.request.user
+          return PlayList.objects.filter(user=user)
+
+
+
+class PlayListRetrieveView(RetrieveAPIView):
+     permission_classes = [IsAuthenticated]
+     serializer_class = PlayListSerializers
+
+     def get_queryset(self):
+          user = self.request.user
+          return PlayList.objects.filter(user=user)
+
+
+
+class LikedVideosView(ListAPIView):
+     permission_classes = [IsAuthenticated]
+     serializer_class = VideoListSerializers
+
+     def get_queryset(self):
+          user = self.request.user
+          likes = Like.objects.filter(user=user, dislike=False)
+          return Video.objects.filter(likes__in=likes)
+
+
+
+class CategoryListView(ListAPIView):
+     permission_classes = [AllowAny]
+     serializer_class = CategoryListSerializers
+     queryset = Category.objects.filter(is_active=True)
+
+
+
+class CategoryRetrieveView(RetrieveAPIView):
+     permission_classes = [AllowAny]
+     serializer_class = CategorySerializers
+     queryset = Category.objects.all()
+
+
+
+class SearchVideosView(ListAPIView):
+     permission_classes = [AllowAny]
+     serializer_class = VideoSerializers
+
+     def get_queryset(self):
+          search = self.kwargs.get('search')
+          return Video.objects.filter(title__icontains=search)
+
+
+class OrderByTime(ListAPIView):
+     permission_classes = [AllowAny]
+     serializer_class = VideoSerializers
+
+     def get_queryset(self):
+          return Video.objects.order_by('-created_at')
+
+
+
+class OrderByView(ListAPIView):
+     permission_classes = [AllowAny]
+     serializer_class = VideoSerializers
+
+     def get_queryset(self):
+          return Video.objects.annotate(Count('view')).order_by('-view__count') # view__count bu view ga qarab count qilish demak
+
+
+
+class OrderByLike(ListAPIView):
+     permission_classes = [AllowAny]
+     serializer_class = VideoSerializers
+
+     def get_queryset(self):
+          return Video.objects.annotate(Count('likes')).order_by('-likes__count') # likes__count bu likes ga qarab count qilish demak

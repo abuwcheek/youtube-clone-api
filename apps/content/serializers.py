@@ -1,12 +1,13 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import Video, View, Like, Comment, CommentLike, CommentReply, PlayList
+from .models import Video, View, Like, Comment, CommentLike, CommentReply, PlayList, Category
 from apps.accounts.serializers import ChanelSerializers, ChanelDataForVideoSerializers
 
 
 class VideoSerializers(serializers.ModelSerializer):
 
     chanel_name = serializers.SerializerMethodField()
+    # likes_count = serializers.SerializerMethodField()
     class Meta:
         model = Video
         fields = ['id', 'title', 'description', 'photo', 'video', 'category', 'author', 'chanel_name']
@@ -16,6 +17,21 @@ class VideoSerializers(serializers.ModelSerializer):
     # self tashqaridan malumotlarni oladi va context orqali ularga murojat qiladi, @staticmethod da bular ishlamaydi
     def get_chanel_name(self, obj):
         return ChanelDataForVideoSerializers(instance=obj.author, context={'request': self.context.get('request')}).data
+
+
+    # def get_likes_count(self, obj):
+    #     user = self.context.get('request').user
+    #     like = Like.objects.filter(user=user, video=obj, dislike=False)
+    #     dislike = Like.objects.filter(user=user, video=obj, dislike=True)
+    #     is_liked = like.exists()
+    #     is_disliked = dislike.exists()
+    #     data = {
+    #         'is_liked': is_liked,
+    #         'is_disliked': is_disliked,
+    #         'likes': obj.video_likes.filter(dislike=False).count(),
+    #         'dislikes': obj.video_likes.filter(dislike=True).count(),
+    #     }
+    #     return data
 
 
 class UserSerializers(serializers.ModelSerializer):
@@ -107,8 +123,75 @@ class CommentListSerializers(serializers.ModelSerializer):
         comments = obj.comment_replies.all()
         return CommentReplySerializers(instance=comments, many=True).data
 
+
+
 class CreatePlayListSerializers(serializers.ModelSerializer):
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
     class Meta:
         model = PlayList
         fields = ['id', 'title', 'videos', 'user']
+
+
+
+class PlayListVideoSerializers(serializers.ModelSerializer):
+    videos_count = serializers.SerializerMethodField()
+    class Meta:
+        model = PlayList
+        fields = ['id' ,'user', 'videos_count', 'title']
+
+
+    @staticmethod
+    def get_videos_count(obj):
+        return obj.videos.count()
+
+
+
+class PlayListSerializers(serializers.ModelSerializer):
+    videos = serializers.SerializerMethodField()
+    class Meta:
+        model = PlayList
+        fields = ['title', 'user', 'videos']
+
+    
+    @staticmethod
+    def get_videos(obj):
+        vds = obj.videos
+        return VideoListSerializers(instance=vds, many=True).data   
+
+
+
+class VideoListSerializers(serializers.ModelSerializer):
+    chanel = serializers.SerializerMethodField()
+    views_count = serializers.SerializerMethodField()
+    class Meta:
+        model = Video
+        fields = ['title', 'author', 'photo', 'chanel', 'views_count', 'created_at']
+
+
+    @staticmethod
+    def get_chanel(obj):
+        return obj.author.name
+
+    @staticmethod
+    def get_views_count(obj):
+        return obj.views.count()
+
+
+
+class CategorySerializers(serializers.ModelSerializer):
+    ctg_videos = serializers.SerializerMethodField()
+    class Meta:
+        model = Category
+        fields = ['name', 'ctg_videos']
+
+    @staticmethod
+    def get_ctg_videos(obj):
+        ctg_vds = ctg_vds.category_videos
+        return VideoListSerializers(instance=ctg_vds, many=True).data 
+
+
+
+class CategoryListSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = ['id' ,'name']

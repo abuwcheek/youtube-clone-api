@@ -8,7 +8,10 @@ from .views import (CreateVideoAPIView, DeleteVideoView,
                     UpdateCommentReplyView, CreatePlayListView,
                     DeletePlayListView, AddVideoPlayListView,
                     RemoveVideoFromPlayListView, FollowToChanelView,
-                    FollowedChanelsListView, VideoCommentListView)
+                    FollowedChanelsListView, VideoCommentListView,
+                    PlayListVideoView, PlayListRetrieveView,
+                    LikedVideosView, CategoryListView, CategoryRetrieveView,
+                    SearchVideosView, OrderByTime, OrderByLike, OrderByView)
 
 urlpatterns = [
      path('create-video', CreateVideoAPIView.as_view(), name='create-video'),
@@ -31,4 +34,13 @@ urlpatterns = [
      path('follow-to-chanel', FollowToChanelView.as_view(), name='follow-chanel'),
      path('followed-chanels', FollowedChanelsListView.as_view(), name='followed-chanels'),
      path('video-comments/<int:pk>', VideoCommentListView.as_view(), name='video-comments'),
+     path('playlist-list', PlayListVideoView.as_view(), name='playlistlist'),
+     path('playlist-retrieve/<int:pk>', PlayListRetrieveView.as_view(), name='playlistretrieve'),
+     path('liked-videos', LikedVideosView.as_view(), name='liked-videos'),
+     path('category-list', CategoryListView.as_view(), name='category-list'),
+     path('category-retrieve/<int:pk>', CategoryRetrieveView.as_view(), name='category-retrieve'),
+     path('search-videos/<str:search>', SearchVideosView.as_view(), name='search-videos'),
+     path('order-by-time', OrderByTime.as_view(), name='order-by-time'),
+     path('order-by-like', OrderByLike.as_view(), name='order-by-like'),
+     path('order-by-view', OrderByView.as_view(), name='order-by-view'),
 ]

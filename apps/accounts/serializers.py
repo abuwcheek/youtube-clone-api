@@ -20,6 +20,7 @@ class ChanelDataForVideoSerializers(serializers.ModelSerializer):
      user = serializers.HiddenField(default=serializers.CurrentUserDefault())
      is_followed = serializers.SerializerMethodField()
      followers_count = serializers.SerializerMethodField()
+     
      class Meta:
           model = Chanel
           fields = [ 'id', 'user', 'name', 'icon', 'is_followed', 'followers_count']

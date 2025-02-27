@@ -1,4 +1,5 @@
 from django.shortcuts import render, get_object_or_404
+from django.db.models import Q
 from django.db.models import Count
 from rest_framework.views import APIView
 from rest_framework.generics import DestroyAPIView, UpdateAPIView, RetrieveAPIView, ListAPIView, CreateAPIView
@@ -81,7 +82,7 @@ class RetrieveVideoView(RetrieveAPIView):
                user = request.user
                view = View.objects.get_or_create(video=video, user=user)
                
-               view.save()
+               # view.save()
           return super().retrieve(request, *args, **kwargs)
 
 
@@ -416,7 +417,7 @@ class OrderByView(ListAPIView):
      serializer_class = VideoSerializers
 
      def get_queryset(self):
-          return Video.objects.annotate(Count('view')).order_by('-view__count') # view__count bu view ga qarab count qilish demak
+          return Video.objects.order_by('-views')
 
 
 
@@ -425,4 +426,6 @@ class OrderByLike(ListAPIView):
      serializer_class = VideoSerializers
 
      def get_queryset(self):
-          return Video.objects.annotate(Count('likes')).order_by('-likes__count') # likes__count bu likes ga qarab count qilish demak
+          return Video.objects.annotate(
+               likes_count=Count('likes', filter=Q(likes__dislike=False))  # Faqat like larni hisoblash
+          ).order_by('-likes_count')

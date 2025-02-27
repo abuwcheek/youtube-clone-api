@@ -5,12 +5,13 @@ from apps.accounts.serializers import ChanelSerializers, ChanelDataForVideoSeria
 
 
 class VideoSerializers(serializers.ModelSerializer):
-
     chanel_name = serializers.SerializerMethodField()
-    # likes_count = serializers.SerializerMethodField()
+    views = serializers.SerializerMethodField()
+    likes_count = serializers.SerializerMethodField()
+
     class Meta:
         model = Video
-        fields = ['id', 'title', 'description', 'photo', 'video', 'category', 'author', 'chanel_name']
+        fields = ['id', 'title', 'description', 'photo', 'video', 'created_at', 'views', 'category', 'author', 'chanel_name', 'likes_count']
 
 
     # @staticmethod emas self bilan yozganimizni boisi chanelni rasm videolari (http) siz qolib ketti 
@@ -18,20 +19,23 @@ class VideoSerializers(serializers.ModelSerializer):
     def get_chanel_name(self, obj):
         return ChanelDataForVideoSerializers(instance=obj.author, context={'request': self.context.get('request')}).data
 
+    def get_views(self, obj):
+        return obj.views.count()
 
-    # def get_likes_count(self, obj):
-    #     user = self.context.get('request').user
-    #     like = Like.objects.filter(user=user, video=obj, dislike=False)
-    #     dislike = Like.objects.filter(user=user, video=obj, dislike=True)
-    #     is_liked = like.exists()
-    #     is_disliked = dislike.exists()
-    #     data = {
-    #         'is_liked': is_liked,
-    #         'is_disliked': is_disliked,
-    #         'likes': obj.video_likes.filter(dislike=False).count(),
-    #         'dislikes': obj.video_likes.filter(dislike=True).count(),
-    #     }
-    #     return data
+
+    def get_likes_count(self, obj):
+        user = self.context.get('request').user.id
+        like = Like.objects.filter(user=user, dislike=False)
+        dislike = Like.objects.filter(user=user, dislike=True)
+        is_liked = like.exists()
+        is_disliked = dislike.exists()
+        data = {
+            'is_liked': is_liked,
+            'is_disliked': is_disliked,
+            'likes': obj.likes.filter(dislike=False).count(),
+            'dislikes': obj.likes.filter(dislike=True).count(),
+        }
+        return data
 
 
 class UserSerializers(serializers.ModelSerializer):

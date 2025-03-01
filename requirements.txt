@@ -1,6 +1,5 @@
 django~=5.1.6
 Pillow~=11.1.0
 djangorestframework-simplejwt~=5.4.0
-
-
-# mv accounts apps >>> accounts app ni apps ni ichiga solish
+drf-yasg~=1.21.9
+drf-spectacular~=0.28.0

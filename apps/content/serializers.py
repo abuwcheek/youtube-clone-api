@@ -167,6 +167,7 @@ class PlayListSerializers(serializers.ModelSerializer):
 class VideoListSerializers(serializers.ModelSerializer):
     chanel = serializers.SerializerMethodField()
     views_count = serializers.SerializerMethodField()
+    
     class Meta:
         model = Video
         fields = ['title', 'author', 'photo', 'chanel', 'views_count', 'created_at']
